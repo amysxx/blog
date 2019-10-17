@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd   
+    http://www.springframework.org/schema/context  
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd  
+    http://www.springframework.org/schema/mvc  
+    http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+
+	<!-- 自动扫描controller层Bean -->
+	<context:component-scan base-package="com.blog.controller" />
+
+	<!-- 默认的注解映射的支持 比如requestMapper之类的 -->
+	<!--注解驱动器-->
+	<mvc:annotation-driven>
+		<!--消息转化器-->
+		<mvc:message-converters>
+			<!--配置以下bean，解决json数据传输中中文乱码的问题-->
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>application/json;charset=UTF-8</value>
+						<value>text/html;charset=UTF-8</value>
+					</list>
+				</property>
+			</bean>
+			<!--json数据转换-->
+			<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+	<!-- 视图解释类 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/" />
+		<property name="suffix" value=".jsp" />
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+	</bean>
+
+
+	<mvc:default-servlet-handler />
+
+	
+	<!-- 静态资源映射 -->
+		<!-- 定义Spring MVC的拦截器 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/admin" />
+			<mvc:mapping path="/admin/*" />
+			<mvc:mapping path="/admin/*/*" />
+			<bean class="com.blog.util.interceptor.AuthorizedInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+	
+</beans>
